@@ -200,7 +200,7 @@ export class MemStorage implements IStorage {
       complement: insertOrder.complement || null,
       paymentMethod: insertOrder.paymentMethod,
       subtotal: insertOrder.subtotal,
-      deliveryFee: insertOrder.deliveryFee,
+      deliveryFee: insertOrder.deliveryFee ?? "0",
       total: insertOrder.total,
       status: insertOrder.status || "preparing",
       createdAt: new Date(),
