@@ -18,10 +18,13 @@ const categoryTitles: Record<string, string> = {
 export function MenuSection({ title, items, onAddToCart }: MenuSectionProps) {
   if (items.length === 0) return null;
 
+  // Get the display name for the category
+  const displayTitle = categoryTitles[title] || title;
+
   return (
     <section className="mb-12" id={`section-${items[0]?.category}`}>
-      <h2 className="text-3xl font-bold text-secondary mb-8">
-        {categoryTitles[title] || title}
+      <h2 className="text-3xl font-bold text-gray-800 mb-8">
+        {displayTitle}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
