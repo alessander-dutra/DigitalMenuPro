@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertOrderSchema, insertOrderItemSchema } from "@shared/schema";
+import { insertOrderSchema, insertOrderItemSchema, insertMenuItemSchema, insertStoreSettingsSchema } from "@shared/schema";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
@@ -142,6 +142,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ ...order, items: orderItems });
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar pedido" });
+    }
+  });
+
+  // Admin routes for menu management
+  app.post("/api/admin/menu-items", async (req, res) => {
+    try {
+      const validatedData = insertMenuItemSchema.parse(req.body);
+      const item = await storage.createMenuItem(validatedData);
+      res.status(201).json(item);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro ao criar item" });
+    }
+  });
+
+  app.put("/api/admin/menu-items/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertMenuItemSchema.partial().parse(req.body);
+      const item = await storage.updateMenuItem(id, validatedData);
+      
+      if (!item) {
+        return res.status(404).json({ message: "Item não encontrado" });
+      }
+      
+      res.json(item);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro ao atualizar item" });
+    }
+  });
+
+  app.delete("/api/admin/menu-items/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteMenuItem(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Item não encontrado" });
+      }
+      
+      res.json({ message: "Item removido com sucesso" });
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao remover item" });
+    }
+  });
+
+  // Store settings routes
+  app.get("/api/store-settings", async (req, res) => {
+    try {
+      const settings = await storage.getStoreSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar configurações" });
+    }
+  });
+
+  app.put("/api/store-settings", async (req, res) => {
+    try {
+      const validatedData = insertStoreSettingsSchema.partial().parse(req.body);
+      const settings = await storage.updateStoreSettings(validatedData);
+      res.json(settings);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro ao atualizar configurações" });
     }
   });
 

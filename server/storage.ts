@@ -2,12 +2,15 @@ import {
   menuItems,
   orders,
   orderItems,
+  storeSettings,
   type MenuItem,
   type InsertMenuItem,
   type Order,
   type InsertOrder,
   type OrderItem,
   type InsertOrderItem,
+  type StoreSettings,
+  type InsertStoreSettings,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -16,6 +19,8 @@ export interface IStorage {
   getMenuItemsByCategory(category: string): Promise<MenuItem[]>;
   getMenuItem(id: number): Promise<MenuItem | undefined>;
   createMenuItem(item: InsertMenuItem): Promise<MenuItem>;
+  updateMenuItem(id: number, item: Partial<InsertMenuItem>): Promise<MenuItem | undefined>;
+  deleteMenuItem(id: number): Promise<boolean>;
   
   // Orders
   createOrder(order: InsertOrder): Promise<Order>;
@@ -24,12 +29,17 @@ export interface IStorage {
   // Order Items
   createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   getOrderItems(orderId: number): Promise<OrderItem[]>;
+  
+  // Store Settings
+  getStoreSettings(): Promise<StoreSettings>;
+  updateStoreSettings(settings: Partial<InsertStoreSettings>): Promise<StoreSettings>;
 }
 
 export class MemStorage implements IStorage {
   private menuItems: Map<number, MenuItem>;
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
+  private storeSettings: StoreSettings;
   private currentMenuItemId: number;
   private currentOrderId: number;
   private currentOrderItemId: number;
@@ -41,6 +51,24 @@ export class MemStorage implements IStorage {
     this.currentMenuItemId = 1;
     this.currentOrderId = 1;
     this.currentOrderItemId = 1;
+
+    // Initialize store settings
+    this.storeSettings = {
+      id: 1,
+      storeName: "Sabor Digital",
+      storePhone: "(11) 99999-9999",
+      storeEmail: "contato@sabordigital.com",
+      storeAddress: "Rua das Flores, 123 - Centro",
+      isOpen: 1,
+      openingTime: "08:00",
+      closingTime: "22:00",
+      allowPickup: 1,
+      deliveryTime: "30-45 min",
+      pickupTime: "15-20 min",
+      deliveryFee: "5.00",
+      paymentMethods: "card,pix,cash",
+      updatedAt: new Date(),
+    };
 
     // Initialize with sample menu data
     this.initializeMenuItems();
@@ -226,6 +254,35 @@ export class MemStorage implements IStorage {
     return Array.from(this.orderItems.values()).filter(
       (item) => item.orderId === orderId
     );
+  }
+
+  async updateMenuItem(id: number, updateItem: Partial<InsertMenuItem>): Promise<MenuItem | undefined> {
+    const existingItem = this.menuItems.get(id);
+    if (!existingItem) return undefined;
+
+    const updatedItem: MenuItem = {
+      ...existingItem,
+      ...updateItem,
+    };
+    this.menuItems.set(id, updatedItem);
+    return updatedItem;
+  }
+
+  async deleteMenuItem(id: number): Promise<boolean> {
+    return this.menuItems.delete(id);
+  }
+
+  async getStoreSettings(): Promise<StoreSettings> {
+    return this.storeSettings;
+  }
+
+  async updateStoreSettings(settings: Partial<InsertStoreSettings>): Promise<StoreSettings> {
+    this.storeSettings = {
+      ...this.storeSettings,
+      ...settings,
+      updatedAt: new Date(),
+    };
+    return this.storeSettings;
   }
 }
 
