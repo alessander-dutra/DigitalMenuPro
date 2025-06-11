@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Search, ShoppingCart } from 'lucide-react';
+import { Search, ShoppingCart, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { AdminSettingsModal } from './AdminSettingsModal';
 
 interface HeaderProps {
   searchQuery: string;
@@ -11,11 +12,21 @@ interface HeaderProps {
 }
 
 export function Header({ searchQuery, onSearchChange, onCartClick, cartItemCount }: HeaderProps) {
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsAdminModalOpen(true)}
+              className="text-gray-600 hover:text-primary"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
             <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold text-primary">Sabor Digital</h1>
             </div>
@@ -53,6 +64,11 @@ export function Header({ searchQuery, onSearchChange, onCartClick, cartItemCount
           </Button>
         </div>
       </div>
+
+      <AdminSettingsModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+      />
     </header>
   );
 }
