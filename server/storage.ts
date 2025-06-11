@@ -11,6 +11,14 @@ import {
   type InsertOrderItem,
   type StoreSettings,
   type InsertStoreSettings,
+  type Category,
+  type InsertCategory,
+  type Promotion,
+  type InsertPromotion,
+  type ScheduledOrder,
+  type InsertScheduledOrder,
+  type ItemReview,
+  type InsertItemReview,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -33,6 +41,28 @@ export interface IStorage {
   // Store Settings
   getStoreSettings(): Promise<StoreSettings>;
   updateStoreSettings(settings: Partial<InsertStoreSettings>): Promise<StoreSettings>;
+  
+  // Categories
+  getCategories(): Promise<Category[]>;
+  createCategory(category: InsertCategory): Promise<Category>;
+  updateCategory(id: number, category: Partial<InsertCategory>): Promise<Category | undefined>;
+  deleteCategory(id: number): Promise<boolean>;
+  
+  // Promotions
+  getPromotions(): Promise<Promotion[]>;
+  getActivePromotions(): Promise<Promotion[]>;
+  createPromotion(promotion: InsertPromotion): Promise<Promotion>;
+  updatePromotion(id: number, promotion: Partial<InsertPromotion>): Promise<Promotion | undefined>;
+  deletePromotion(id: number): Promise<boolean>;
+  
+  // Scheduled Orders
+  createScheduledOrder(scheduledOrder: InsertScheduledOrder): Promise<ScheduledOrder>;
+  getScheduledOrders(): Promise<ScheduledOrder[]>;
+  
+  // Reviews
+  createItemReview(review: InsertItemReview): Promise<ItemReview>;
+  getItemReviews(menuItemId: number): Promise<ItemReview[]>;
+  getTopRatedItems(): Promise<MenuItem[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -63,6 +93,8 @@ export class MemStorage implements IStorage {
       openingTime: "08:00",
       closingTime: "22:00",
       allowPickup: 1,
+      allowCheckout: 1,
+      allowScheduling: 1,
       deliveryTime: "30-45 min",
       pickupTime: "15-20 min",
       deliveryFee: "5.00",
