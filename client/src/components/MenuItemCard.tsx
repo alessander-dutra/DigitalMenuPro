@@ -29,8 +29,10 @@ export function MenuItemCard({ item, onAddToCart }: MenuItemCardProps) {
         className="w-full h-48 object-cover"
       />
       <CardContent className="p-6">
-        <h3 className="text-xl font-semibold text-secondary mb-2">{item.name}</h3>
-        <p className="text-gray-600 text-sm mb-4">{item.description}</p>
+        <h3 className="text-lg font-bold text-gray-800 mb-2 leading-tight line-clamp-2">
+          {item.name}
+        </h3>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{item.description}</p>
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-primary">
             R$ {parseFloat(item.price).toFixed(2).replace('.', ',')}

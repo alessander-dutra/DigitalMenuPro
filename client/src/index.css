@@ -89,3 +89,18 @@
 .order-confirmation {
   @apply fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4;
 }
+
+/* Line clamp utilities for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
