@@ -59,11 +59,11 @@
 
 /* Custom styles for the restaurant app */
 .category-tab-active {
-  @apply text-primary border-b-2 border-primary;
+  @apply text-primary border-b-2 border-primary bg-orange-50 font-semibold;
 }
 
 .category-tab-inactive {
-  @apply text-gray-500 hover:text-primary transition-colors;
+  @apply text-gray-600 hover:text-primary hover:bg-gray-50 transition-all duration-200;
 }
 
 .menu-item-card {

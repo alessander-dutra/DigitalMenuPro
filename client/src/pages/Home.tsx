@@ -68,7 +68,10 @@ export default function Home() {
     if (activeCategory && !searchQuery) {
       const element = document.getElementById(`section-${activeCategory}`);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start'
+        });
       }
     }
   }, [activeCategory, searchQuery]);

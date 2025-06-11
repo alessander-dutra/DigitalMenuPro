@@ -22,10 +22,12 @@ export function MenuSection({ title, items, onAddToCart }: MenuSectionProps) {
   const displayTitle = categoryTitles[title] || title;
 
   return (
-    <section className="mb-12" id={`section-${items[0]?.category}`}>
-      <h2 className="text-3xl font-bold text-gray-800 mb-8">
-        {displayTitle}
-      </h2>
+    <section className="mb-12 scroll-mt-36" id={`section-${title}`}>
+      <div className="bg-gradient-to-r from-orange-50 to-transparent p-4 rounded-lg mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">
+          {displayTitle}
+        </h2>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
           <MenuItemCard
