@@ -69,18 +69,34 @@ export class MemStorage implements IStorage {
   private menuItems: Map<number, MenuItem>;
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
+  private categories: Map<number, Category>;
+  private promotions: Map<number, Promotion>;
+  private scheduledOrders: Map<number, ScheduledOrder>;
+  private itemReviews: Map<number, ItemReview>;
   private storeSettings: StoreSettings;
   private currentMenuItemId: number;
   private currentOrderId: number;
   private currentOrderItemId: number;
+  private currentCategoryId: number;
+  private currentPromotionId: number;
+  private currentScheduledOrderId: number;
+  private currentReviewId: number;
 
   constructor() {
     this.menuItems = new Map();
     this.orders = new Map();
     this.orderItems = new Map();
+    this.categories = new Map();
+    this.promotions = new Map();
+    this.scheduledOrders = new Map();
+    this.itemReviews = new Map();
     this.currentMenuItemId = 1;
     this.currentOrderId = 1;
     this.currentOrderItemId = 1;
+    this.currentCategoryId = 1;
+    this.currentPromotionId = 1;
+    this.currentScheduledOrderId = 1;
+    this.currentReviewId = 1;
 
     // Initialize store settings
     this.storeSettings = {
@@ -104,7 +120,10 @@ export class MemStorage implements IStorage {
 
     // Initialize with sample menu data
     this.initializeMenuItems();
+    this.initializeCategories();
   }
+
+
 
   private initializeMenuItems() {
     const sampleItems: InsertMenuItem[] = [
@@ -315,6 +334,182 @@ export class MemStorage implements IStorage {
       updatedAt: new Date(),
     };
     return this.storeSettings;
+  }
+
+  private initializeCategories() {
+    const defaultCategories = [
+      { name: "Entradas", icon: "Cookie", minItems: 0, maxItems: 50, displayOrder: 1, isActive: 1 },
+      { name: "Pratos Principais", icon: "ChefHat", minItems: 0, maxItems: 100, displayOrder: 2, isActive: 1 },
+      { name: "Sobremesas", icon: "IceCream", minItems: 0, maxItems: 30, displayOrder: 3, isActive: 1 },
+      { name: "Bebidas", icon: "Coffee", minItems: 0, maxItems: 50, displayOrder: 4, isActive: 1 },
+    ];
+
+    defaultCategories.forEach((categoryData) => {
+      const id = this.currentCategoryId++;
+      const category: Category = { 
+        id,
+        name: categoryData.name,
+        icon: categoryData.icon,
+        minItems: categoryData.minItems,
+        maxItems: categoryData.maxItems,
+        displayOrder: categoryData.displayOrder,
+        isActive: categoryData.isActive,
+        createdAt: new Date(),
+      };
+      this.categories.set(id, category);
+    });
+  }
+
+  // Categories
+  async getCategories(): Promise<Category[]> {
+    return Array.from(this.categories.values()).sort((a, b) => a.displayOrder - b.displayOrder);
+  }
+
+  async createCategory(insertCategory: InsertCategory): Promise<Category> {
+    const id = this.currentCategoryId++;
+    const category: Category = { 
+      id,
+      name: insertCategory.name,
+      icon: insertCategory.icon || "Utensils",
+      minItems: insertCategory.minItems || 0,
+      maxItems: insertCategory.maxItems || 100,
+      displayOrder: insertCategory.displayOrder || 0,
+      isActive: insertCategory.isActive || 1,
+      createdAt: new Date(),
+    };
+    this.categories.set(id, category);
+    return category;
+  }
+
+  async updateCategory(id: number, updateCategory: Partial<InsertCategory>): Promise<Category | undefined> {
+    const category = this.categories.get(id);
+    if (!category) return undefined;
+    
+    const updatedCategory: Category = {
+      ...category,
+      ...updateCategory,
+    };
+    this.categories.set(id, updatedCategory);
+    return updatedCategory;
+  }
+
+  async deleteCategory(id: number): Promise<boolean> {
+    return this.categories.delete(id);
+  }
+
+  // Promotions
+  async getPromotions(): Promise<Promotion[]> {
+    return Array.from(this.promotions.values());
+  }
+
+  async getActivePromotions(): Promise<Promotion[]> {
+    const now = new Date();
+    return Array.from(this.promotions.values()).filter(
+      promo => promo.isActive === 1 && now >= promo.startDate && now <= promo.endDate
+    );
+  }
+
+  async createPromotion(insertPromotion: InsertPromotion): Promise<Promotion> {
+    const id = this.currentPromotionId++;
+    const promotion: Promotion = { 
+      id,
+      menuItemId: insertPromotion.menuItemId,
+      originalPrice: insertPromotion.originalPrice,
+      promotionalPrice: insertPromotion.promotionalPrice,
+      startDate: insertPromotion.startDate,
+      endDate: insertPromotion.endDate,
+      isActive: insertPromotion.isActive || 1,
+      createdAt: new Date(),
+    };
+    this.promotions.set(id, promotion);
+    return promotion;
+  }
+
+  async updatePromotion(id: number, updatePromotion: Partial<InsertPromotion>): Promise<Promotion | undefined> {
+    const promotion = this.promotions.get(id);
+    if (!promotion) return undefined;
+    
+    const updatedPromotion: Promotion = {
+      ...promotion,
+      ...updatePromotion,
+    };
+    this.promotions.set(id, updatedPromotion);
+    return updatedPromotion;
+  }
+
+  async deletePromotion(id: number): Promise<boolean> {
+    return this.promotions.delete(id);
+  }
+
+  // Scheduled Orders
+  async createScheduledOrder(insertScheduledOrder: InsertScheduledOrder): Promise<ScheduledOrder> {
+    const id = this.currentScheduledOrderId++;
+    const scheduledOrder: ScheduledOrder = { 
+      id,
+      orderId: insertScheduledOrder.orderId,
+      scheduledDateTime: insertScheduledOrder.scheduledDateTime,
+      scheduledType: insertScheduledOrder.scheduledType,
+      notes: insertScheduledOrder.notes || null,
+      createdAt: new Date(),
+    };
+    this.scheduledOrders.set(id, scheduledOrder);
+    return scheduledOrder;
+  }
+
+  async getScheduledOrders(): Promise<ScheduledOrder[]> {
+    return Array.from(this.scheduledOrders.values());
+  }
+
+  // Reviews
+  async createItemReview(insertReview: InsertItemReview): Promise<ItemReview> {
+    const id = this.currentReviewId++;
+    const review: ItemReview = { 
+      id,
+      menuItemId: insertReview.menuItemId,
+      customerName: insertReview.customerName,
+      customerEmail: insertReview.customerEmail,
+      rating: insertReview.rating,
+      comment: insertReview.comment || null,
+      createdAt: new Date(),
+    };
+    this.itemReviews.set(id, review);
+    return review;
+  }
+
+  async getItemReviews(menuItemId: number): Promise<ItemReview[]> {
+    return Array.from(this.itemReviews.values()).filter(review => review.menuItemId === menuItemId);
+  }
+
+  async getTopRatedItems(): Promise<MenuItem[]> {
+    const reviewsByItem = new Map<number, ItemReview[]>();
+    
+    // Group reviews by menu item
+    Array.from(this.itemReviews.values()).forEach(review => {
+      if (!reviewsByItem.has(review.menuItemId)) {
+        reviewsByItem.set(review.menuItemId, []);
+      }
+      reviewsByItem.get(review.menuItemId)!.push(review);
+    });
+
+    // Calculate average ratings and get top items
+    const itemRatings = new Map<number, { averageRating: number, reviewCount: number }>();
+    
+    Array.from(reviewsByItem.entries()).forEach(([menuItemId, reviews]) => {
+      const averageRating = reviews.reduce((sum: number, review: ItemReview) => sum + review.rating, 0) / reviews.length;
+      itemRatings.set(menuItemId, { averageRating, reviewCount: reviews.length });
+    });
+
+    // Get menu items with their ratings, sorted by rating
+    const topRatedItems = Array.from(this.menuItems.values())
+      .filter(item => itemRatings.has(item.id))
+      .sort((a, b) => {
+        const ratingA = itemRatings.get(a.id)!.averageRating;
+        const ratingB = itemRatings.get(b.id)!.averageRating;
+        return ratingB - ratingA;
+      })
+      .slice(0, 10); // Top 10 items
+
+    return topRatedItems;
   }
 }
 
