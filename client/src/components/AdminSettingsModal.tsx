@@ -213,9 +213,11 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="store">Configurações da Loja</TabsTrigger>
             <TabsTrigger value="menu">Gerenciar Cardápio</TabsTrigger>
+            <TabsTrigger value="categories">Categorias</TabsTrigger>
+            <TabsTrigger value="promotions">Promoções & Cupons</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-6">
@@ -535,6 +537,126 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
                 </div>
               </DialogContent>
             </Dialog>
+          </TabsContent>
+
+          {/* Categories Tab */}
+          <TabsContent value="categories" className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Gerenciar Categorias</h3>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Configuração de Impressoras por Categoria</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {['Entradas', 'Pratos Principais', 'Sobremesas', 'Bebidas'].map((category) => (
+                    <div key={category} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <span className="font-medium">{category}</span>
+                      </div>
+                      <div className="w-48">
+                        <PrinterSelector
+                          value="none"
+                          onValueChange={() => {}}
+                          label=""
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600">
+                      💡 Ao definir uma impressora para categoria, todos os novos itens criados nesta categoria receberão automaticamente esta impressora.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Promotions & Coupons Tab */}
+          <TabsContent value="promotions" className="space-y-6">
+            <div className="space-y-6">
+              {/* Cupons de Desconto */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cupons de Desconto</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Button className="w-full">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Criar Novo Cupom
+                    </Button>
+                    <div className="text-center text-gray-500 py-8">
+                      Nenhum cupom cadastrado
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Happy Hour */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Promoções Happy Hour</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Button className="w-full">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Criar Promoção Happy Hour
+                    </Button>
+                    <div className="text-center text-gray-500 py-8">
+                      Nenhuma promoção ativa
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Sistema de Avaliações */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sistema de Avaliações</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Permitir Avaliações dos Itens</Label>
+                      <Switch
+                        checked={settingsData.allowReviews === 1}
+                        onCheckedChange={(checked) => 
+                          setSettingsData({ ...settingsData, allowReviews: checked ? 1 : 0 })
+                        }
+                      />
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Clientes poderão avaliar itens do cardápio após o pedido
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Histórico de Pedidos */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Histórico de Pedidos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Permitir Histórico para Clientes</Label>
+                      <Switch
+                        checked={settingsData.allowOrderHistory === 1}
+                        onCheckedChange={(checked) => 
+                          setSettingsData({ ...settingsData, allowOrderHistory: checked ? 1 : 0 })
+                        }
+                      />
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Clientes poderão ver histórico e repetir pedidos anteriores
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>

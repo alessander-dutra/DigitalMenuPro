@@ -9,6 +9,7 @@ interface CartOverlayProps {
   onUpdateQuantity: (menuItemId: number, quantity: number) => void;
   onProceedToCheckout: () => void;
   subtotal: number;
+  checkoutEnabled?: boolean;
 }
 
 export function CartOverlay({
@@ -17,7 +18,8 @@ export function CartOverlay({
   onClose,
   onUpdateQuantity,
   onProceedToCheckout,
-  subtotal
+  subtotal,
+  checkoutEnabled = true
 }: CartOverlayProps) {
   if (!isOpen) return null;
 
@@ -89,10 +91,14 @@ export function CartOverlay({
                 </span>
               </div>
               <Button
-                onClick={onProceedToCheckout}
-                className="w-full bg-primary text-white hover:bg-orange-600"
+                onClick={checkoutEnabled ? onProceedToCheckout : undefined}
+                disabled={!checkoutEnabled}
+                className={`w-full ${checkoutEnabled 
+                  ? 'bg-primary text-white hover:bg-orange-600' 
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
               >
-                Finalizar Pedido
+                {checkoutEnabled ? 'Finalizar Pedido' : 'Checkout Desabilitado (Modo Visualização)'}
               </Button>
             </div>
           )}

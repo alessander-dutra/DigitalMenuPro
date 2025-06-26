@@ -115,6 +115,8 @@ export class MemStorage implements IStorage {
       pickupTime: "15-20 min",
       deliveryFee: "5.00",
       paymentMethods: "card,pix,cash",
+      allowReviews: 1,
+      allowOrderHistory: 1,
       updatedAt: new Date(),
     };
 
@@ -355,6 +357,7 @@ export class MemStorage implements IStorage {
         maxItems: categoryData.maxItems,
         displayOrder: categoryData.displayOrder,
         isActive: categoryData.isActive,
+        defaultPrinter: null,
         createdAt: new Date(),
       };
       this.categories.set(id, category);
@@ -376,6 +379,7 @@ export class MemStorage implements IStorage {
       maxItems: insertCategory.maxItems || 100,
       displayOrder: insertCategory.displayOrder || 0,
       isActive: insertCategory.isActive || 1,
+      defaultPrinter: insertCategory.defaultPrinter || null,
       createdAt: new Date(),
     };
     this.categories.set(id, category);

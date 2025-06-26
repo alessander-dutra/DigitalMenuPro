@@ -209,6 +209,7 @@ export default function Home() {
         onUpdateQuantity={updateQuantity}
         onProceedToCheckout={handleProceedToCheckout}
         subtotal={getSubtotal()}
+        checkoutEnabled={storeSettings?.allowCheckout === 1}
       />
 
       <CheckoutModal
