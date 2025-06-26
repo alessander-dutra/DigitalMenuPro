@@ -258,7 +258,8 @@ export class MemStorage implements IStorage {
     const item: MenuItem = { 
       ...insertItem, 
       id,
-      available: insertItem.available ?? 1
+      available: insertItem.available ?? 1,
+      productionPrinter: insertItem.productionPrinter || null
     };
     this.menuItems.set(id, item);
     return item;

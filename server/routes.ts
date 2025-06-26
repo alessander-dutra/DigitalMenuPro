@@ -1,7 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertOrderSchema, insertOrderItemSchema, insertMenuItemSchema, insertStoreSettingsSchema } from "@shared/schema";
+import { 
+  insertOrderSchema, 
+  insertOrderItemSchema, 
+  insertMenuItemSchema, 
+  insertStoreSettingsSchema,
+  insertCategorySchema,
+  insertPromotionSchema,
+  insertItemReviewSchema,
+  insertScheduledOrderSchema
+} from "@shared/schema";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
@@ -213,6 +222,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
       }
       res.status(500).json({ message: "Erro ao atualizar configurações" });
+    }
+  });
+
+  // Categories routes
+  app.get("/api/categories", async (req, res) => {
+    try {
+      const categories = await storage.getCategories();
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar categorias" });
+    }
+  });
+
+  app.post("/api/categories", async (req, res) => {
+    try {
+      const validatedData = insertCategorySchema.parse(req.body);
+      const category = await storage.createCategory(validatedData);
+      res.status(201).json(category);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro ao criar categoria" });
+    }
+  });
+
+  // Reviews routes
+  app.post("/api/reviews", async (req, res) => {
+    try {
+      const validatedData = insertItemReviewSchema.parse(req.body);
+      const review = await storage.createItemReview(validatedData);
+      res.status(201).json(review);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro ao criar avaliação" });
+    }
+  });
+
+  app.get("/api/reviews/:menuItemId", async (req, res) => {
+    try {
+      const menuItemId = parseInt(req.params.menuItemId);
+      const reviews = await storage.getItemReviews(menuItemId);
+      res.json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar avaliações" });
+    }
+  });
+
+  app.get("/api/top-rated-items", async (req, res) => {
+    try {
+      const items = await storage.getTopRatedItems();
+      res.json(items);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar itens mais avaliados" });
+    }
+  });
+
+  // Promotions routes
+  app.get("/api/promotions", async (req, res) => {
+    try {
+      const promotions = await storage.getPromotions();
+      res.json(promotions);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar promoções" });
+    }
+  });
+
+  app.post("/api/promotions", async (req, res) => {
+    try {
+      const validatedData = insertPromotionSchema.parse(req.body);
+      const promotion = await storage.createPromotion(validatedData);
+      res.status(201).json(promotion);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro ao criar promoção" });
+    }
+  });
+
+  // Scheduled orders routes
+  app.post("/api/scheduled-orders", async (req, res) => {
+    try {
+      const validatedData = insertScheduledOrderSchema.parse(req.body);
+      const scheduledOrder = await storage.createScheduledOrder(validatedData);
+      res.status(201).json(scheduledOrder);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro ao criar pedido agendado" });
     }
   });
 

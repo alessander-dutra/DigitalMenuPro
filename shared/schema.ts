@@ -10,6 +10,7 @@ export const menuItems = pgTable("menu_items", {
   category: text("category").notNull(),
   imageUrl: text("image_url").notNull(),
   available: integer("available").notNull().default(1),
+  productionPrinter: text("production_printer"), // Nome da impressora de produção
 });
 
 export const orders = pgTable("orders", {

@@ -6,15 +6,22 @@ import { MenuSection } from '@/components/MenuSection';
 import { CartOverlay } from '@/components/CartOverlay';
 import { CheckoutModal } from '@/components/CheckoutModal';
 import { OrderConfirmation } from '@/components/OrderConfirmation';
+import { TopRatedItems } from '@/components/TopRatedItems';
+import { ReviewModal } from '@/components/ReviewModal';
+import { Footer } from '@/components/Footer';
 import { useCart } from '@/hooks/useCart';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { MenuItem } from '@shared/schema';
+import type { MenuItem, StoreSettings } from '@shared/schema';
 import type { OrderResponse } from '@/lib/types';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('entradas');
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [reviewModal, setReviewModal] = useState<{
+    isOpen: boolean;
+    menuItem: MenuItem | null;
+  }>({ isOpen: false, menuItem: null });
   const [orderConfirmation, setOrderConfirmation] = useState<{
     isOpen: boolean;
     data: OrderResponse | null;
@@ -35,6 +42,10 @@ export default function Home() {
 
   const { data: menuItems, isLoading, error } = useQuery<MenuItem[]>({
     queryKey: ['/api/menu-items'],
+  });
+
+  const { data: storeSettings } = useQuery<StoreSettings>({
+    queryKey: ['/api/store-settings'],
   });
 
   // Filter items based on search query
@@ -185,6 +196,12 @@ export default function Home() {
         )}
       </main>
 
+      {/* Seção de Itens Mais Avaliados */}
+      <TopRatedItems onAddToCart={addToCart} />
+
+      {/* Rodapé */}
+      <Footer />
+
       <CartOverlay
         isOpen={isCartOpen}
         cartItems={cartItems}
@@ -207,6 +224,12 @@ export default function Home() {
         isOpen={orderConfirmation.isOpen}
         orderData={orderConfirmation.data}
         onClose={handleCloseOrderConfirmation}
+      />
+
+      <ReviewModal
+        isOpen={reviewModal.isOpen}
+        menuItem={reviewModal.menuItem}
+        onClose={() => setReviewModal({ isOpen: false, menuItem: null })}
       />
     </div>
   );

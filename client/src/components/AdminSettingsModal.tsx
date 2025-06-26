@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { PrinterSelector } from '@/components/PrinterSelector';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -26,6 +27,7 @@ interface MenuItemFormData {
   category: string;
   imageUrl: string;
   available: number;
+  productionPrinter: string;
 }
 
 export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps) {
@@ -39,6 +41,7 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
     category: 'entradas',
     imageUrl: '',
     available: 1,
+    productionPrinter: '',
   });
 
   const { toast } = useToast();
@@ -164,6 +167,7 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
       category: 'entradas',
       imageUrl: '',
       available: 1,
+      productionPrinter: '',
     });
   };
 
@@ -176,6 +180,7 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
       category: item.category,
       imageUrl: item.imageUrl,
       available: item.available,
+      productionPrinter: item.productionPrinter || '',
     });
     setIsMenuFormOpen(true);
   };
@@ -301,6 +306,22 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
                         onCheckedChange={(checked) => setSettingsData({ ...settingsData, allowPickup: checked ? 1 : 0 })}
                       />
                       <Label htmlFor="allowPickup">Permitir Retirada na Loja</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="allowCheckout"
+                        checked={settingsData.allowCheckout === 1}
+                        onCheckedChange={(checked) => setSettingsData({ ...settingsData, allowCheckout: checked ? 1 : 0 })}
+                      />
+                      <Label htmlFor="allowCheckout">Permitir Checkout (Desmarque para modo apenas visualização)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="allowScheduling"
+                        checked={settingsData.allowScheduling === 1}
+                        onCheckedChange={(checked) => setSettingsData({ ...settingsData, allowScheduling: checked ? 1 : 0 })}
+                      />
+                      <Label htmlFor="allowScheduling">Permitir Agendamento de Pedidos</Label>
                     </div>
                   </CardContent>
                 </Card>
@@ -483,6 +504,13 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
                       id="itemImageUrl"
                       value={menuFormData.imageUrl}
                       onChange={(e) => setMenuFormData({ ...menuFormData, imageUrl: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <PrinterSelector
+                      value={menuFormData.productionPrinter}
+                      onValueChange={(printer) => setMenuFormData({ ...menuFormData, productionPrinter: printer })}
+                      label="Impressora de Produção"
                     />
                   </div>
                   <div className="flex items-center space-x-2">
