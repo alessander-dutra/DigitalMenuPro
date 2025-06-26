@@ -12,6 +12,8 @@ interface PrinterSelectorProps {
 }
 
 export function PrinterSelector({ value, onValueChange, label = "Impressora de Produção" }: PrinterSelectorProps) {
+  // Convert empty string to 'none' for SelectItem compatibility
+  const normalizedValue = value === '' ? 'none' : value;
   const [printers, setPrinters] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -140,7 +142,14 @@ export function PrinterSelector({ value, onValueChange, label = "Impressora de P
         </Button>
       </div>
       
-      <Select value={value} onValueChange={onValueChange}>
+      <Select 
+        value={normalizedValue} 
+        onValueChange={(selectedValue) => {
+          // Convert 'none' back to empty string for compatibility
+          const finalValue = selectedValue === 'none' ? '' : selectedValue;
+          onValueChange(finalValue);
+        }}
+      >
         <SelectTrigger id="printer-selector">
           <div className="flex items-center">
             <Printer className="h-4 w-4 mr-2 text-gray-500" />
@@ -148,7 +157,7 @@ export function PrinterSelector({ value, onValueChange, label = "Impressora de P
           </div>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Nenhuma impressora</SelectItem>
+          <SelectItem value="none">Nenhuma impressora</SelectItem>
           {printers.map((printer, index) => (
             <SelectItem key={index} value={printer}>
               {printer}

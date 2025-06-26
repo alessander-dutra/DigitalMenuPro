@@ -41,7 +41,7 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
     category: 'entradas',
     imageUrl: '',
     available: 1,
-    productionPrinter: '',
+    productionPrinter: 'none',
   });
 
   const { toast } = useToast();
@@ -167,7 +167,7 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
       category: 'entradas',
       imageUrl: '',
       available: 1,
-      productionPrinter: '',
+      productionPrinter: 'none',
     });
   };
 
@@ -180,7 +180,7 @@ export function AdminSettingsModal({ isOpen, onClose }: AdminSettingsModalProps)
       category: item.category,
       imageUrl: item.imageUrl,
       available: item.available,
-      productionPrinter: item.productionPrinter || '',
+      productionPrinter: item.productionPrinter || 'none',
     });
     setIsMenuFormOpen(true);
   };
